@@ -72,7 +72,7 @@ try:
             }
     for src in srcs:
         if(rules.should_block(src, options)):
-            crit_msg.append(args.url + "contains dodgy 'script src' parameter: " + src)
+            crit_msg.append(args.url + " contains dodgy 'script src' parameter: " + src)
         else:
             scanned_srcs.append(src)
 
