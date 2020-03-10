@@ -2,7 +2,8 @@
 Nagios plugin to check a webpage for malicious URLs in it's script src parameters.
 
 
-Needs the following python modules:
+# Installation
+This plugin needs the following python3 modules:
 
 * requests
 * cachecontrol
@@ -10,6 +11,30 @@ Needs the following python modules:
 * bs4
 * lockfile
 
+`adblockparser` is not commonly packaged by distros, so you'd have to use pip
+for that:
+
+```
+apt-get install python3-pip
+pip3 install adblockparser
+```
+
+You can now choose to install the rest with pip as well:
+
+```
+pip3 install requests cachecontrol bs4 lockfile
+```
+
+
+Or from apt-get - this may be easier for automagic upgrades etc:
+
+
+```bash
+apt-get python3-requests python3-cachecontrol python3-lockfile python3-bs4
+```
+
+
+# Usage 
 
 
 ```
