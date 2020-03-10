@@ -25,9 +25,10 @@ try:
     parser.add_argument('--referer', help='The referer to use when checking the URL')
     parser.add_argument('--useragent', help='The user agent to use when checking the URL',
             default='Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko')
-    parser.add_argument('--blacklist', help='EasyList compatible blacklist URL. See https://easylist.to', 
+    parser.add_argument('--blacklist', help='EasyList compatible blacklist URL. See https://easylist.to ' +
+        '(default: https://easylist-downloads.adblockplus.org/easylist_noadult.txt)', 
             default='https://easylist-downloads.adblockplus.org/easylist_noadult.txt')
-    parser.add_argument('--cachedir', help='Which directory to use for storing cached content', default='.cache')
+    parser.add_argument('--cachedir', help='Which directory to use for storing cached content (default: .cache)', default='.cache')
     parser.add_argument('--verbose', help='Show found URLs', action="store_true")
     
 

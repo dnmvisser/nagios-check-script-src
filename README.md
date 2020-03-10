@@ -53,7 +53,9 @@ optional arguments:
                         The user agent to use when checking the URL
   --blacklist BLACKLIST
                         EasyList compatible blacklist URL. See
-                        https://easylist.to
+                        https://easylist.to (default: https://easylist-
+                        downloads.adblockplus.org/easylist_noadult.txt)
   --cachedir CACHEDIR   Which directory to use for storing cached content
+                        (default: .cache)
   --verbose             Show found URLs
 ```
