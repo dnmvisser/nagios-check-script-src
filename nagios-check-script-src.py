@@ -27,6 +27,7 @@ try:
             default='Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko')
     parser.add_argument('--blacklist', help='EasyList compatible blacklist URL. See https://easylist.to', 
             default='https://easylist-downloads.adblockplus.org/easylist_noadult.txt')
+    parser.add_argument('--cachedir', help='Which directory to use for storing cached content', default='.cache')
     parser.add_argument('--verbose', help='Show found URLs', action="store_true")
     
 
@@ -59,7 +60,7 @@ try:
 
     # Set up caching
     sess = CacheControl(requests.Session(),
-            FileCache('/tmp/nagios_http_cache'))
+            FileCache(args.cachedir))
 
     response = sess.get(args.blacklist)
     rules = AdblockRules(

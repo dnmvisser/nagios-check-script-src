@@ -40,7 +40,8 @@ apt-get python3-requests python3-cachecontrol python3-lockfile python3-bs4
 ```
 usage: nagios-check-script-src.py [-h] --url URL [--referer REFERER]
                                   [--useragent USERAGENT]
-                                  [--blacklist BLACKLIST] [--verbose]
+                                  [--blacklist BLACKLIST]
+                                  [--cachedir CACHEDIR] [--verbose]
 
 Check web page for unwanted script URLs
 
@@ -53,5 +54,6 @@ optional arguments:
   --blacklist BLACKLIST
                         EasyList compatible blacklist URL. See
                         https://easylist.to
+  --cachedir CACHEDIR   Which directory to use for storing cached content
   --verbose             Show found URLs
 ```
