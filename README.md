@@ -57,5 +57,9 @@ optional arguments:
                         downloads.adblockplus.org/easylist_noadult.txt)
   --cachedir CACHEDIR   Which directory to use for storing cached content
                         (default: .cache)
+  --verify              Verify TLS certificate. The default is to NOT verify
+                        the TLS certificate, as this check is about something
+                        else. Usually this is done with a separated/dedicated
+                        service check
   --verbose             Show found URLs
 ```

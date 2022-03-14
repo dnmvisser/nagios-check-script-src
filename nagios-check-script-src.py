@@ -22,6 +22,10 @@ def nagios_exit(message, code):
 try:
     parser = argparse.ArgumentParser(description='Check web page for unwanted script URLs')
     parser.add_argument('--url',    help='the URL to check', required=True)
+    parser.add_argument('--verify', help='Verify the TLS certificate on the URL',
+            action='store_true',
+            required=False,
+            default=False)
     parser.add_argument('--referer', help='The referer to use when checking the URL')
     parser.add_argument('--useragent', help='The user agent to use when checking the URL',
             default='Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko')
@@ -40,17 +44,19 @@ try:
     crit_msg = []
     scanned_srcs = []
 
+    if not args.verify:
+        from requests.packages.urllib3.exceptions import InsecureRequestWarning
+        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
     # Fetch web page that we want to test
     target_sess = requests.Session()
-
     if(args.referer):
         target_sess.headers.update({'referer': args.referer})
     
     if(args.useragent):
         target_sess.headers.update({'user-agent': args.useragent})
 
-    body = target_sess.get(args.url).text
+    body = target_sess.get(args.url, verify=args.verify).text
     soup = BeautifulSoup(body, features='html.parser')
     scripts = soup.find_all('script')
     srcs = [link['src'] for link in scripts if 'src' in link.attrs]
