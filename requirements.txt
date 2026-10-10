@@ -1,0 +1,6 @@
+# python requirements
+adblock
+bs4
+cachecontrol
+lockfile
+requests
