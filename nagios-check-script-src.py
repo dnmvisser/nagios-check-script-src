@@ -36,7 +36,7 @@ try:
         '(default: https://easylist-downloads.adblockplus.org/easylist_noadult.txt)',
             default='https://easylist-downloads.adblockplus.org/easylist_noadult.txt')
     parser.add_argument('--cachedir', help='Which directory to use for storing cached content (default: .cache)', default='.cache')
-    parser.add_argument('-v', '--verbose', help='Show found URLs (-v) or fetched body content (-vv)', action="count", default=0)
+    parser.add_argument('-v', '--verbose', help='Show found URLs (-v), fetched body content (-vv), or request and response headers (-vvv)', action="count", default=0)
 
 
     args = parser.parse_args()
@@ -46,6 +46,7 @@ try:
     warn_msg = []
     crit_msg = []
     scanned_srcs = []
+    extra_output = []
 
     if not args.verify:
         from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -66,11 +67,20 @@ try:
                 target_sess.headers.update({k.strip(): v.strip()})
 
     response = target_sess.get(args.url, verify=args.verify)
+    body = response.text
+
+    if args.verbose >= 2:
+        extra_output.append("--- BODY CONTENT ---\n" + body)
+
+    if args.verbose >= 3:
+        req_headers = "--- REQUEST HEADERS ---\n" + "\n".join(f"{k}: {v}" for k, v in response.request.headers.items())
+        resp_headers = "--- RESPONSE HEADERS ---\n" + "\n".join(f"{k}: {v}" for k, v in response.headers.items())
+        extra_output.append(req_headers)
+        extra_output.append(resp_headers)
+
     if response.status_code >= 400:
         crit_msg.append(f"{args.url} returned HTTP status {response.status_code}")
-        body = response.text
     else:
-        body = response.text
         soup = BeautifulSoup(body, features='html.parser')
         scripts = soup.find_all('script')
         srcs = [link['src'] for link in scripts if 'src' in link.attrs]
@@ -99,17 +109,22 @@ try:
         ok_msg.append("None of the " + str(len(scanned_srcs)) + " found 'script src' URLs on " + args.url + " are listed in " + args.blacklist)
 
     if args.verbose >= 1 and scanned_srcs:
-        ok_msg.append("\n".join(scanned_srcs))
-    if args.verbose >= 2:
-        ok_msg.append(body)
+        extra_output.append("--- SCANNED SCRIPTS ---\n" + "\n".join(scanned_srcs))
+
+    # Exit with accumulated message(s)
+    if crit_msg:
+        msg = "CRITICAL: " + ' '.join(crit_msg + warn_msg)
+        if extra_output:
+            msg += "\n\n" + "\n\n".join(extra_output)
+        nagios_exit(msg, 2)
+    elif warn_msg:
+        msg = "WARNING: " + ' '.join(warn_msg)
+        if extra_output:
+            msg += "\n\n" + "\n\n".join(extra_output)
+        nagios_exit(msg, 1)
+    else:
+        msg_list = ok_msg + extra_output
+        nagios_exit("OK: " + '\n\n'.join(msg_list), 0)
 
 except Exception as e:
     nagios_exit("UNKNOWN: Unknown error: {0}.".format(e), 3)
-
-# Exit with accumulated message(s)
-if crit_msg:
-    nagios_exit("CRITICAL: " + ' '.join(crit_msg + warn_msg), 2)
-elif warn_msg:
-    nagios_exit("WARNING: " + ' '.join(warn_msg), 1)
-else:
-    nagios_exit("OK: " + '\n'.join(ok_msg), 0)
