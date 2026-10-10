@@ -36,7 +36,7 @@ try:
         '(default: https://easylist-downloads.adblockplus.org/easylist_noadult.txt)', 
             default='https://easylist-downloads.adblockplus.org/easylist_noadult.txt')
     parser.add_argument('--cachedir', help='Which directory to use for storing cached content (default: .cache)', default='.cache')
-    parser.add_argument('--verbose', help='Show found URLs', action="store_true")
+    parser.add_argument('-v', '--verbose', help='Show found URLs (-v) or fetched body content (-vv)', action="count", default=0)
     
 
     args = parser.parse_args()
@@ -94,8 +94,10 @@ try:
             scanned_srcs.append(src)
 
     ok_msg.append("None of the " + str(len(scanned_srcs)) + " found 'script src' URLs on " + args.url + " are listed in " + args.blacklist)
-    if(args.verbose):
+    if args.verbose >= 1:
         ok_msg.append("\n".join(scanned_srcs))
+    if args.verbose >= 2:
+        ok_msg.append(body)
 
 except Exception as e:
     nagios_exit("UNKNOWN: Unknown error: {0}.".format(e), 3)
