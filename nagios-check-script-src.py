@@ -29,6 +29,9 @@ try:
     parser.add_argument('--referer', help='The referer to use when checking the URL')
     parser.add_argument('--useragent', help='The user agent to use when checking the URL',
             default='Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko')
+    parser.add_argument('--header', help='Custom header in the format Key: Value (can be specified multiple times)',
+            action='append',
+            required=False)
     parser.add_argument('--blacklist', help='EasyList compatible blacklist URL. See https://easylist.to ' +
         '(default: https://easylist-downloads.adblockplus.org/easylist_noadult.txt)', 
             default='https://easylist-downloads.adblockplus.org/easylist_noadult.txt')
@@ -55,6 +58,12 @@ try:
     
     if(args.useragent):
         target_sess.headers.update({'user-agent': args.useragent})
+
+    if(args.header):
+        for h in args.header:
+            if ':' in h:
+                k, v = h.split(':', 1)
+                target_sess.headers.update({k.strip(): v.strip()})
 
     body = target_sess.get(args.url, verify=args.verify).text
     soup = BeautifulSoup(body, features='html.parser')
